@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Kuarahy ha Jasy — O Sol e a Lua | Ambiente VR</title>
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#08130e}
+#ui{position:fixed;z-index:10;top:12px;left:12px;right:12px;pointer-events:none;color:white;text-shadow:0 2px 5px #000}
+#title{font-size:20px;font-weight:700}.hint{font-size:13px;margin-top:5px}.pill{display:inline-block;margin-top:7px;padding:6px 10px;border-radius:20px;background:rgba(0,0,0,.48)}
+#story{position:fixed;z-index:11;left:50%;bottom:22px;transform:translateX(-50%);width:min(680px,88vw);padding:14px 18px;border-radius:16px;background:rgba(0,0,0,.72);color:white;display:none;text-align:center;box-shadow:0 8px 30px #0008}
+#story b{display:block;font-size:18px;margin-bottom:6px} #story span{font-size:14px;line-height:1.45}
+</style>
+</head>
+<body>
+<div id="ui"><div id="title">☀️ Kuarahy ha Jasy — O Sol e a Lua</div><div class="hint">Explore a floresta, siga as trilhas e visite os quatro pontos da história.</div><div class="pill">🖥️ PC: WASD/setas + mouse • 🥽 VR: joystick esquerdo para caminhar • botão X/Grip para interagir</div></div>
+<div id="story"><b id="storyTitle"></b><span id="storyText"></span></div>
+<a-scene background="color:#8dc9d4" renderer="colorManagement:true; physicallyCorrectLights:true" vr-mode-ui="enabled:true" loading-screen="dotsColor:#fff; backgroundColor:#0b1b14" shadow="type:pcfsoft">
+<a-assets>
+ <a-mixin id="tree" geometry="primitive:cylinder;radius:.22;height:3" material="color:#5b3b20" shadow="cast:true"></a-mixin>
+ <a-mixin id="leaf" geometry="primitive:icosahedron;radius:1.35" material="color:#1f6b36;flatShading:true" shadow="cast:true"></a-mixin>
+</a-assets>
+<a-entity light="type:ambient;color:#cfead2;intensity:1.1"></a-entity><a-entity light="type:directional;color:#fff2c7;intensity:1.5" position="-5 10 2" rotation="-35 -25 0" shadow="cast:true"></a-entity>
+<!-- céu e terreno -->
+<a-sky color="#75b9cf"></a-sky>
+<a-plane rotation="-90 0 0" width="90" height="90" material="color:#315d31;roughness:1" shadow="receive:true"></a-plane>
+<!-- rio -->
+<a-plane position="5 .02 -1" rotation="-90 0 0" width="9" height="90" material="color:#2c93bd;opacity:.92;transparent:true;roughness:.2"></a-plane>
+<a-plane position="5 .03 -1" rotation="-90 0 0" width="7" height="90" material="color:#62c7e0;opacity:.35;transparent:true"></a-plane>
+<!-- trilhas -->
+<a-plane position="-8 .025 -7" rotation="-90 0 0" width="3" height="28" material="color:#9a7447"></a-plane>
+<a-plane position="-8 .026 7" rotation="-90 0 0" width="3" height="20" material="color:#9a7447"></a-plane>
+<a-plane position="-1 .027 -8" rotation="-90 0 0" width="20" height="2.5" material="color:#9a7447"></a-plane>
+<!-- ponte -->
+<a-box position="5 1.0 -1" width="4" height=".35" depth="8" material="color:#714b2b" shadow="cast:true"></a-box>
+<a-box position="5 1.65 -4.7" width="4" height=".18" depth=".18" material="color:#4a2f1b"></a-box><a-box position="5 1.65 2.7" width="4" height=".18" depth=".18" material="color:#4a2f1b"></a-box>
+<!-- árvores repetidas -->
+<script>
+function trees(){const scene=document.querySelector('a-scene'); const pts=[[-16,0,-15],[-12,0,-18],[-5,0,-17],[3,0,-16],[12,0,-15],[17,0,-10],[-18,0,-5],[-14,0,4],[-17,0,13],[-10,0,16],[-2,0,15],[9,0,14],[16,0,8],[17,0,2],[-19,0,19],[3,0,22]];pts.forEach(([x,y,z])=>{let e=document.createElement('a-entity');e.setAttribute('position',`${x} ${y} ${z}`);e.innerHTML='<a-entity mixin="tree"></a-entity><a-entity mixin="leaf" position="0 2 0"></a-entity><a-entity mixin="leaf" scale=".75 .75 .75" position=".8 2.5 .3"></a-entity>';scene.appendChild(e)});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',trees);else trees();
+</script>
+<!-- Sol e Lua -->
+<a-entity id="sol" position="-9 2.2 -7" look-at="#player"><a-sphere radius="1.0" material="color:#ffd83d;emissive:#ffb300;emissiveIntensity:1.4" light="type:point;color:#ffd65a;intensity:1.4;distance:10"></a-sphere><a-text value="KUARAHY\nSOL" align="center" color="#fff" width="4" position="0 1.4 0"></a-text></a-entity>
+<a-entity id="lua" position="-2 2.1 -8" look-at="#player"><a-sphere radius=".85" material="color:#f4f1dc;emissive:#d9e4ff;emissiveIntensity:.7"></a-sphere><a-text value="JASY\nLUA" align="center" color="#fff" width="4" position="0 1.25 0"></a-text></a-entity>
+<!-- pontos da história -->
+<a-entity class="storyPoint" position="-10 1.4 -2" data-title="1 — A floresta e os irmãos" data-text="Kuarahy e Jasy percorrem as trilhas da mata. Os dois irmãos são apresentados como personagens centrais da narrativa."><a-cylinder radius=".32" height=".12" color="#ffd34a" animation="property:rotation;to:0 360 0;loop:true;dur:4000"></a-cylinder><a-text value="1" align="center" color="#111" width="2.5" position="0 .3 0"></a-text></a-entity>
+<a-entity class="storyPoint" position="-4 1.4 -5" data-title="2 — O louro" data-text="A história chega ao episódio do louro. A ave fala com os irmãos e revela a verdade sobre a mãe deles."><a-cylinder radius=".32" height=".12" color="#ffd34a" animation="property:rotation;to:0 360 0;loop:true;dur:4000"></a-cylinder><a-text value="2" align="center" color="#111" width="2.5" position="0 .3 0"></a-text></a-entity>
+<a-entity class="storyPoint" position="-2 1.4 7" data-title="3 — A ponte e as onças" data-text="Os irmãos planejam uma armadilha usando uma ponte estreita sobre o rio. A narrativa conduz o estudante até o confronto com as onças."><a-cylinder radius=".32" height=".12" color="#ffd34a" animation="property:rotation;to:0 360 0;loop:true;dur:4000"></a-cylinder><a-text value="3" align="center" color="#111" width="2.5" position="0 .3 0"></a-text></a-entity>
+<a-entity class="storyPoint" position="-12 1.4 10" data-title="4 — O nascimento do Sol e da Lua" data-text="Ao final da narrativa, Deus Tupã transforma os filhos em Sol e Lua: um ilumina o dia e o outro acompanha a noite."><a-cylinder radius=".32" height=".12" color="#ffd34a" animation="property:rotation;to:0 360 0;loop:true;dur:4000"></a-cylinder><a-text value="4" align="center" color="#111" width="2.5" position="0 .3 0"></a-text></a-entity>
+<!-- marcador do louro --> <a-entity position="-4 1.7 -5"><a-cone radius-bottom=".28" radius-top=".05" height=".6" color="#e6c34a"></a-cone><a-text value="🦜 LOURO" align="center" color="#fff" width="3" position="0 .7 0"></a-text></a-entity>
+<!-- onças simbólicas --> <a-entity position="-1 .7 7" rotation="0 180 0"><a-box width="1.6" height=".8" depth=".55" color="#c58b42" shadow="cast:true"></a-box><a-sphere radius=".45" position="-.9 .25 0" color="#c58b42"></a-sphere><a-text value="🐆" width="3" position="0 1 0"></a-text></a-entity>
+<!-- câmera/controles -->
+<a-entity id="rig" movement-controls="speed:0.18;controls:keyboard,gamepad,vr;fly:false" position="-13 0 17">
+ <a-entity id="player" camera position="0 1.6 0" look-controls="pointerLockEnabled:true"></a-entity>
+ <a-entity laser-controls="hand:left" raycaster="objects:.storyPoint;far:6" line="color:#ffd34a"></a-entity>
+ <a-entity laser-controls="hand:right" raycaster="objects:.storyPoint;far:6" line="color:#ffd34a"></a-entity>
+</a-entity>
+</a-scene>
+<script>
+const box=document.getElementById('story'),tt=document.getElementById('storyTitle'),tx=document.getElementById('storyText');
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=.92;speechSynthesis.speak(u)}catch(e){}}
+function show(el){tt.textContent=el.dataset.title;tx.textContent=el.dataset.text;box.style.display='block';speak(el.dataset.title+'. '+el.dataset.text);clearTimeout(window.storyTimer);window.storyTimer=setTimeout(()=>box.style.display='none',12000)}
+document.addEventListener('click',e=>{const p=e.target.closest?.('.storyPoint');if(p)show(p)});
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='e'){let best=null,dist=999;document.querySelectorAll('.storyPoint').forEach(p=>{let d=p.object3D.position.distanceTo(document.querySelector('#player').object3D.position);if(d<dist){dist=d;best=p}});if(best&&dist<5)show(best)}});
+document.querySelectorAll('.storyPoint').forEach(p=>{p.addEventListener('mouseenter',()=>{p.setAttribute('scale','1.25 1.25 1.25')});p.addEventListener('mouseleave',()=>{p.setAttribute('scale','1 1 1')});p.addEventListener('click',()=>show(p))});
+</script>
+</body></html>
